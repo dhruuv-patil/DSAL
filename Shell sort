@@ -1,0 +1,56 @@
+import java.util.Scanner;
+
+public class ShellSort {
+
+    public void sort(int[] array) {
+        int n = array.length;
+
+        for (int gap = n / 2; gap >= 1; gap /= 2) {
+            for (int j = gap; j < n; j++) {
+                for (int i = j - gap; i >= 0; i -= gap) {
+                    if (array[i + gap] >= array[i]) {
+                        break;
+                    } else {
+                        int temp = array[i + gap];
+                        array[i + gap] = array[i];
+                        array[i] = temp;
+                    }
+                }
+            }
+        }
+    }
+
+    public void printArray(int[] array) {
+        for (int val : array) {
+            System.out.print(val + " ");
+        }
+        System.out.println();
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        ShellSort sorter = new ShellSort();
+
+        System.out.println("=== Shell Sort Demonstration ===");
+        System.out.print("Enter the number of elements: ");
+        int n = scanner.nextInt();
+
+        int[] data = new int[n];
+
+        System.out.println("Enter " + n + " integer elements:");
+        for (int i = 0; i < n; i++) {
+            System.out.print("Element " + (i + 1) + ": ");
+            data[i] = scanner.nextInt();
+        }
+
+        System.out.println("\nOriginal array:");
+        sorter.printArray(data);
+
+        sorter.sort(data);
+
+        System.out.println("\nSorted array using Shell Sort:");
+        sorter.printArray(data);
+
+        scanner.close();
+    }
+}
