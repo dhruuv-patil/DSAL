@@ -1,0 +1,123 @@
+#include <iostream>
+using namespace std;
+
+struct node{
+    int data;
+    node* lc;
+    node* rc;
+
+    node(int val): data(val),lc(NULL),rc(NULL) {}
+}*root;
+
+class BST{
+    public:
+    BST(){
+        root = NULL;
+    }
+
+    void insertNode(int val){
+        node* newNode =  new node(val);
+        
+        if(root == NULL){
+            root = newNode;
+            return;
+        }
+        if(root != NULL){
+            node* temp = root;
+            while(true){
+                if(val > temp->data){
+                    if(temp->rc == NULL){
+                        temp->rc = newNode;
+                        return;
+                    }
+                    temp = temp->rc;
+                }else{
+                    if(temp->lc == NULL){
+                        temp->lc = newNode;
+                        return;
+                    }
+                    temp = temp->lc;
+                }
+            }
+        }
+    }
+
+    void inorder(node* temp){
+        if(temp == NULL){
+            return;
+        }
+        inorder(temp->lc);
+        cout << temp->data << " ";
+        inorder(temp->rc);
+    }
+
+    void searchNode(int key){
+        node* temp = root;
+        while(temp != NULL){
+            if(key == temp->data){
+                cout << endl << key << " Present in the BST!!!" << endl;
+                return;
+            }else if(key > temp->data){
+                temp = temp->rc;
+            }else{
+                temp = temp->lc;
+            }
+        }
+        cout << endl << key << " Not present in the BST!!!" << endl;
+    }
+
+    int minValue(){
+        if(root == NULL){
+            cout << "Empty BST!!!" << endl;
+            return -1;
+        }
+        node* temp = root;
+        while(temp->lc != NULL){
+            temp = temp->lc;
+        }
+        return temp->data;
+    }
+
+    int maxValue(){
+        if(root == NULL){
+            cout << "Empty BST!!!" << endl;
+            return -1;
+        }
+        node* temp = root;
+        while(temp->rc != NULL){
+            temp = temp->rc;
+        }
+        return temp->data;
+    }
+
+    int numOfNodesInLongestPath(node* temp){
+        if(temp == NULL){
+            return 0;
+        }
+        int x = max(1+numOfNodesInLongestPath(temp->lc), 1+numOfNodesInLongestPath(temp->rc));
+        return x;
+    }
+};
+
+int main(){
+    BST a;
+    
+    a.insertNode(9);
+    a.insertNode(4);
+    a.insertNode(7);
+    a.insertNode(10);
+    a.insertNode(3);
+    
+    cout << "Inorder Traversal: ";
+    a.inorder(root);
+
+    a.searchNode(13);
+
+    cout << "Minimum value in BST: " << a.minValue() << endl;
+
+    cout << "Maximum value in BST: " << a.maxValue() << endl;
+
+    cout << "Number of nodes in longest path from root: " << a.numOfNodesInLongestPath(root) << endl;
+
+    return 0;
+}
