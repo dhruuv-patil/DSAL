@@ -1,0 +1,113 @@
+class LinearProbing:
+    def __init__(self, size):
+        self.size = size
+        self.table = [None] * size
+
+    def hash_function(self, key):
+        return key % self.size
+
+    def insert(self, key):
+        index = self.hash_function(key)
+        attempts = 0
+        while self.table[index] is not None:
+            index = (index + 1) % self.size
+            attempts += 1
+            if attempts == self.size:
+                print(f"Overflow! Cannot insert {key}, table is full.")
+                return
+        self.table[index] = key
+
+    def search(self, key):
+        index = self.hash_function(key)
+        comparisons = 0
+        start = index
+        while self.table[index] is not None:
+            comparisons += 1
+            if self.table[index] == key:
+                return True, comparisons
+            index = (index + 1) % self.size
+            if index == start:
+                break
+        return False, comparisons
+
+    def display(self):
+        return self.table
+
+
+class QuadraticProbing:
+    def __init__(self, size):
+        self.size = size
+        self.table = [None] * size
+
+    def hash_function(self, key):
+        return key % self.size
+
+    def insert(self, key):
+        index = self.hash_function(key)
+        i = 0
+        while i < self.size:
+            new_index = (index + i * i) % self.size
+            if self.table[new_index] is None:
+                self.table[new_index] = key
+                return
+            i += 1
+        print(f"Overflow! Cannot insert {key}, table is full.")
+
+    def search(self, key):
+        index = self.hash_function(key)
+        i = 0
+        comparisons = 0
+        while i < self.size:
+            new_index = (index + i * i) % self.size
+            comparisons += 1
+            if self.table[new_index] == key:
+                return True, comparisons
+            if self.table[new_index] is None:
+                break
+            i += 1
+        return False, comparisons
+
+    def display(self):
+        return self.table
+
+
+def main():
+    size = 5
+    lht = LinearProbing(size)
+    qht = QuadraticProbing(size)
+
+    print("=== Telephone Book System ===")
+    n = int(input("Enter number of phone numbers: "))
+    for _ in range(n):
+        phone = int(input("Enter phone number: "))
+        lht.insert(phone)
+        qht.insert(phone)
+
+    while True:
+        print("\n--- Menu ---")
+        print("1. Search")
+        print("2. Display")
+        print("3. Exit")
+        choice = input("Enter your choice: ")
+
+        if choice == '1':
+            phone = int(input("Enter phone number to search: "))
+            found1, comp1 = lht.search(phone)
+            found2, comp2 = qht.search(phone)
+
+            print("\nSearch Results:")
+            print(f"Linear Probing: {'Found' if found1 else 'Not Found'} (Comparisons: {comp1})")
+            print(f"Quadratic Probing: {'Found' if found2 else 'Not Found'} (Comparisons: {comp2})")
+
+        elif choice == '2':
+            print("\nLinear Probing Table:", lht.display())
+            print("Quadratic Probing Table:", qht.display())
+
+        elif choice == '3':
+            print("Exiting...")
+            break
+        else:
+            print("Invalid choice!")
+
+if __name__ == "__main__":
+    main()
