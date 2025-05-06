@@ -1,0 +1,149 @@
+#include <iostream>
+#include <fstream>
+#include <cstring>
+using namespace std;
+
+const int MAX_RECORDS = 10;
+
+struct Employee {
+    int id;
+    char name[20];
+
+    Employee() {
+        id = -1;  // Indicates empty/deleted record
+        strcpy(name, "");
+    }
+};
+
+// Initialize file with empty records
+void initializeFile(const char* filename) {
+    ofstream file(filename, ios::binary);
+    Employee emp;
+    for (int i = 0; i < MAX_RECORDS; i++) {
+        file.write((char*)&emp, sizeof(emp));
+    }
+    file.close();
+}
+
+// Insert a record at a specific position
+void insertRecord(const char* filename, int position, Employee emp) {
+    if (position < 0 || position >= MAX_RECORDS) {
+        cout << "Invalid position!" << endl;
+        return;
+    }
+
+    fstream file(filename, ios::in | ios::out | ios::binary);
+    file.seekg(position * sizeof(Employee));
+
+    Employee temp;
+    file.read((char*)&temp, sizeof(temp));
+
+    if (temp.id != -1) {
+        cout << "Position already occupied by ID: " << temp.id << endl;
+        file.close();
+        return;
+    }
+
+    file.seekp(position * sizeof(Employee));
+    file.write((char*)&emp, sizeof(emp));
+    cout << "Record inserted at position " << position << endl;
+    file.close();
+}
+
+// Delete a record from a specific position
+void deleteRecord(const char* filename, int position) {
+    if (position < 0 || position >= MAX_RECORDS) {
+        cout << "Invalid position!" << endl;
+        return;
+    }
+
+    fstream file(filename, ios::in | ios::out | ios::binary);
+    file.seekg(position * sizeof(Employee));
+
+    Employee temp;
+    file.read((char*)&temp, sizeof(temp));
+
+    if (temp.id == -1) {
+        cout << "No record to delete at this position." << endl;
+    } else {
+        Employee blank;
+        file.seekp(position * sizeof(Employee));
+        file.write((char*)&blank, sizeof(blank));
+        cout << "Record deleted at position " << position << endl;
+    }
+
+    file.close();
+}
+
+// Display all records
+void displayAll(const char* filename) {
+    ifstream file(filename, ios::binary);
+    Employee emp;
+    int index = 0;
+    cout << "\nEmployee Records:\n";
+    cout << "---------------------------\n";
+    while (file.read((char*)&emp, sizeof(emp))) {
+        cout << "Position " << index++ << ": ";
+        if (emp.id != -1)
+            cout << "ID: " << emp.id << ", Name: " << emp.name << endl;
+        else
+            cout << "<Empty>" << endl;
+    }
+    cout << "---------------------------\n";
+    file.close();
+}
+
+// Main menu
+int main() {
+    const char* filename = "employees.dat";
+    int choice;
+
+    initializeFile(filename);
+
+    do {
+        cout << "\n========= Employee Management Menu =========\n";
+        cout << "1. Insert Employee Record\n";
+        cout << "2. Delete Employee Record\n";
+        cout << "3. Display All Records\n";
+        cout << "4. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1: {
+                Employee emp;
+                int pos;
+                cout << "\nEnter position (0-" << MAX_RECORDS - 1 << "): ";
+                cin >> pos;
+                cout << "Enter ID: ";
+                cin >> emp.id;
+                cin.ignore(); // clear newline
+                cout << "Enter Name: ";
+                cin.getline(emp.name, 20);
+                insertRecord(filename, pos, emp);
+                break;
+            }
+
+            case 2: {
+                int pos;
+                cout << "\nEnter position to delete (0-" << MAX_RECORDS - 1 << "): ";
+                cin >> pos;
+                deleteRecord(filename, pos);
+                break;
+            }
+
+            case 3:
+                displayAll(filename);
+                break;
+
+            case 4:
+                cout << "Exiting program. Goodbye!\n";
+                break;
+
+            default:
+                cout << "Invalid choice! Please try again.\n";
+        }
+    } while (choice != 4);
+
+    return 0;
+}
