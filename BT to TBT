@@ -1,0 +1,122 @@
+#include <iostream>
+using namespace std;
+
+struct Node {
+    int data;
+    Node* left;
+    Node* right;
+    bool rightThread;
+
+    Node(int val) : data(val), left(nullptr), right(nullptr), rightThread(false) {}
+};
+
+class ThreadedBinaryTree {
+private:
+    Node* root;
+
+    // Helper to insert node in a standard BST
+    Node* insert(Node* node, int val) {
+        if (!node) return new Node(val);
+
+        if (val < node->data)
+            node->left = insert(node->left, val);
+        else
+            node->right = insert(node->right, val);
+
+        return node;
+    }
+
+    // Helper to convert to threaded binary tree
+    void createThreaded(Node* node, Node*& prev) {
+        if (!node) return;
+
+        createThreaded(node->left, prev);
+
+        if (prev && !prev->right) {
+            prev->right = node;
+            prev->rightThread = true;
+        }
+
+        prev = node;
+
+        // Process right subtree only if it's not a thread
+        if (!node->rightThread)
+            createThreaded(node->right, prev);
+    }
+
+    // Helper to get the leftmost node
+    Node* leftMost(Node* node) {
+        while (node && node->left)
+            node = node->left;
+        return node;
+    }
+
+public:
+    ThreadedBinaryTree() : root(nullptr) {}
+
+    void insert(int val) {
+        root = insert(root, val);
+    }
+
+    void convertToThreaded() {
+        Node* prev = nullptr;
+        createThreaded(root, prev);
+    }
+
+    void inOrderTraversal() {
+        cout << "\nIn-order Traversal using Threaded Links:\n";
+        Node* curr = leftMost(root);
+
+        while (curr) {
+            cout << curr->data << " ";
+
+            if (curr->rightThread) {
+                curr = curr->right;
+            } else {
+                curr = leftMost(curr->right);
+            }
+        }
+        cout << endl;
+    }
+};
+
+int main() {
+    ThreadedBinaryTree tree;
+    int choice, val;
+
+    cout << "==== Threaded Binary Tree ====\n";
+    while (true) {
+        cout << "\n1. Insert Node";
+        cout << "\n2. Convert to Threaded Tree";
+        cout << "\n3. In-order Traversal";
+        cout << "\n4. Exit";
+        cout << "\nEnter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                cout << "Enter value to insert: ";
+                cin >> val;
+                tree.insert(val);
+                break;
+
+            case 2:
+                tree.convertToThreaded();
+                cout << "Tree converted to threaded binary tree.\n";
+                break;
+
+            case 3:
+                tree.inOrderTraversal();
+                break;
+
+            case 4:
+                cout << "Exiting...\n";
+                return 0;
+
+            default:
+                cout << "Invalid choice. Try again.\n";
+        }
+    }
+
+    return 0;
+}
