@@ -1,0 +1,54 @@
+#include <iostream>
+using namespace std;
+
+const int INF = 999; // A large number to represent infinity
+
+int main() {
+    int n;
+    cout << "Enter number of offices: ";
+    cin >> n;
+
+    int cost[100][100]; // Adjacency matrix to store connection costs
+
+    cout << "Enter cost to connect each pair of offices (use " << INF << " if no direct connection):\n";
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            cin >> cost[i][j];
+        }
+    }
+
+    int visited[100] = {0}; // Track included offices
+    visited[0] = 1; // Start with office 0
+
+    int edgeCount = 0, totalCost = 0;
+
+    cout << "\nConnections in the Minimum Spanning Tree:\n";
+
+    while (edgeCount < n - 1) {
+        int minCost = INF;
+        int a = -1, b = -1;
+
+        // Find the minimum cost edge connecting visited and unvisited offices
+        for (int i = 0; i < n; i++) {
+            if (visited[i]) {
+                for (int j = 0; j < n; j++) {
+                    if (!visited[j] && cost[i][j] < minCost) {
+                        minCost = cost[i][j];
+                        a = i;
+                        b = j;
+                    }
+                }
+            }
+        }
+
+        if (a != -1 && b != -1) {
+            cout << "Office " << a << " - Office " << b << " : Cost = " << minCost << endl;
+            visited[b] = 1;
+            totalCost += minCost;
+            edgeCount++;
+        }
+    }
+
+    cout << "Total minimum cost to connect all offices: " << totalCost << endl;
+    return 0;
+}
