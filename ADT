@@ -1,0 +1,74 @@
+class SetADT:
+    def __init__(self):
+        self.elements = []
+
+    def add(self, value):
+        if value not in self.elements:
+            self.elements.append(value)
+
+    def remove(self, value):
+        if value in self.elements:
+            self.elements.remove(value)
+
+    def contains(self, value):
+        return value in self.elements
+
+    def size(self):
+        return len(self.elements)
+
+    def iterator(self):
+        return iter(self.elements)
+
+    def intersection(self, other_set):
+        result = SetADT()
+        for value in self.elements:
+            if other_set.contains(value):
+                result.add(value)
+        return result
+
+    def union(self, other_set):
+        result = SetADT()
+        for value in self.elements:
+            result.add(value)
+        for value in other_set.elements:
+            result.add(value)
+        return result
+
+    def difference(self, other_set):
+        result = SetADT()
+        for value in self.elements:
+            if not other_set.contains(value):
+                result.add(value)
+        return result
+
+    def is_subset(self, other_set):
+        for value in self.elements:
+            if not other_set.contains(value):
+                return False
+        return True
+
+    def __str__(self):
+        return "{" + ", ".join(str(e) for e in self.elements) + "}"
+"""
+# main.py
+
+from set_adt import SetADT
+
+a = SetADT()
+a.add(1)
+a.add(2)
+a.add(3)
+
+b = SetADT()
+b.add(3)
+b.add(4)
+b.add(5)
+
+print("Set A:", a)
+print("Set B:", b)
+print("Union:", a.union(b))
+print("Intersection:", a.intersection(b))
+print("Difference (A - B):", a.difference(b))
+print("Is A subset of B?", a.is_subset(b))
+
+"""
