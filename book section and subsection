@@ -1,0 +1,92 @@
+#include <iostream>
+#include <vector>
+#include <string>
+using namespace std;
+
+class Node {
+public:
+    string label;
+    vector<Node*> children;
+
+    Node(string name) {
+        label = name;
+    }
+};
+
+class BookTree {
+private:
+    Node* root;
+
+public:
+    BookTree() {
+        root = nullptr;
+    }
+
+    void createTree() {
+        string bookName;
+        cout << "Enter name of book: ";
+        getline(cin, bookName);
+        root = new Node(bookName);
+
+        int nChapters;
+        cout << "Enter number of chapters: ";
+        cin >> nChapters;
+        cin.ignore();
+
+        for (int i = 0; i < nChapters; ++i) {
+            string chapterName;
+            cout << "Enter name of chapter " << i + 1 << ": ";
+            getline(cin, chapterName);
+            Node* chapter = new Node(chapterName);
+
+            int nSections;
+            cout << "Enter number of sections in chapter " << i + 1 << ": ";
+            cin >> nSections;
+            cin.ignore();
+
+            for (int j = 0; j < nSections; ++j) {
+                string sectionName;
+                cout << "Enter name of section " << j + 1 << ": ";
+                getline(cin, sectionName);
+                Node* section = new Node(sectionName);
+
+                int nSubsections;
+                cout << "Enter number of subsections in section " << j + 1 << ": ";
+                cin >> nSubsections;
+                cin.ignore();
+
+                for (int k = 0; k < nSubsections; ++k) {
+                    string subsectionName;
+                    cout << "Enter name of subsection " << k + 1 << ": ";
+                    getline(cin, subsectionName);
+                    Node* subsection = new Node(subsectionName);
+                    section->children.push_back(subsection);
+                }
+                chapter->children.push_back(section);
+            }
+            root->children.push_back(chapter);
+        }
+    }
+
+    void printTree(Node* node, int depth = 0) {
+        if (!node) return;
+
+        for (int i = 0; i < depth; i++) cout << "\t";
+        cout << "- " << node->label << endl;
+
+        for (auto child : node->children)
+            printTree(child, depth + 1);
+    }
+
+    void display() {
+        cout << "\nBook Hierarchy:\n";
+        printTree(root);
+    }
+};
+
+int main() {
+    BookTree book;
+    book.createTree();
+    book.display();
+    return 0;
+}
